@@ -48,7 +48,11 @@ Broadcast::channel('messages', function () {
     ],
 ],
 ```
-10. Define port and host in resources/js/bootstrap.js
+10. Install Laravel echo 
+```
+npm install --save laravel-echo pusher-js
+```
+11. Define port and host in resources/js/bootstrap.js
 ```
 window.Echo = new Echo({
     broadcaster: 'pusher',
