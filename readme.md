@@ -1,5 +1,20 @@
-### In .env file
-1. change 
+1. Install laravel-websockets
+```
+composer require beyondcode/laravel-websockets
+```
+2.  Publish the migration file
+```
+php artisan vendor:publish --provider="BeyondCode\LaravelWebSockets\WebSocketsServiceProvider" --tag="migrations"
+```
+3. Migrate
+```
+php artisan migrate
+```
+4. publish the WebSocket configuration file:
+```
+php artisan vendor:publish --provider="BeyondCode\LaravelWebSockets\WebSocketsServiceProvider" --tag="config"
+```
+6. change In  .env file
 ```
 BROADCAST_DRIVER=pusher
 PUSHER_APP_ID=LaravelReal
@@ -7,17 +22,17 @@ PUSHER_APP_KEY=LaravelReal
 PUSHER_APP_SECRET=LaravelRealSecret
 PUSHER_APP_CLUSTER=mt1
 ```
-2. Uncomment Boardcast service provider in config/app.php
+7. Uncomment Boardcast service provider in config/app.php
 ```
 App\Providers\BroadcastServiceProvider::class,
 ```
-3. Add this line to boardcast message
+8. Add this line to boardcast message
 ```
 Broadcast::channel('messages', function () {
     return true;
 });
 ```
-4. Define port and host in boardcasting.php
+9. Define port and host in boardcasting.php
 ```
 'pusher' => [
     'driver' => 'pusher',
@@ -33,7 +48,7 @@ Broadcast::channel('messages', function () {
     ],
 ],
 ```
-5. Define port and host in bootstrap.js
+10. Define port and host in bootstrap.js
 ```
 window.Echo = new Echo({
     broadcaster: 'pusher',
@@ -43,7 +58,7 @@ window.Echo = new Echo({
     disableStats: true,
 });
 ```
-6. Run 
+11. Run 
 ```
 websocket:serve
 ```
