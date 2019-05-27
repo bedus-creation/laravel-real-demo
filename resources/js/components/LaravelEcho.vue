@@ -2,7 +2,11 @@
     <div class="container">
         <div class="row">
             <div class="col-md-6 offset-md-3 card card-body">
-                <div v-for="message in messages" :key="message">{{message}}</div>
+                <div v-for="message in messages">
+                    <span
+                        :class="message.to_id==to_id ? 'float-right':'float-left'"
+                    >{{message.message}}</span>
+                </div>
                 <div class="form-inline">
                     <input
                         v-model="form.message"
@@ -30,10 +34,12 @@
 <script>
 import axios from "axios";
 export default {
-    props: ["to_id", "init_messages"],
+    props: ["to_id", "init_messages", "auth_id"],
     data() {
         return {
-            messages: this.init_messages,
+            messages: Object.keys(this.init_messages).map(key => {
+                return this.init_messages[key];
+            }),
             form: {
                 to_id: this.to_id,
                 message: ""
@@ -41,14 +47,19 @@ export default {
         };
     },
     mounted() {
-        console.log("Component mounted.");
+        Echo.channel("messages").listen("MesssageSent", e => {
+            this.messages.push(e.message);
+        });
     },
     methods: {
         sendMessage() {
             axios
                 .post("/api/message", this.form)
                 .then(response => {
-                    this.messages.push(this.form.message);
+                    this.messages.push({
+                        message: this.form.message,
+                        to_id: this.to_id
+                    });
                     this.form.message = "";
                 })
                 .catch(error => console.log(error));

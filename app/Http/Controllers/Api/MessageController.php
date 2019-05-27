@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Models\Message;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Events\MesssageSent;
 use App\User;
+
 
 class MessageController extends Controller
 {
@@ -45,7 +47,8 @@ class MessageController extends Controller
     public function store(Request $request)
     {
         $request->merge(["from_id" => auth()->user()->id]);
-        $this->repository->create($request->all());
+        $message = $this->repository->create($request->all());
+        broadcast(new MesssageSent($message))->toOthers();
         return response()->json(['message' => 'success']);
     }
 
@@ -59,10 +62,10 @@ class MessageController extends Controller
     {
         $user = User::where('id', '!=', auth()->user()->id)
             ->where('id', $id)
-            ->with(["messages" => function ($q) {
-                $q->where('from_id', auth()->user()->id);
-            }])->firstOrFail();
-        $messages = $user->messages->pluck('message');
+            ->firstOrFail();
+        $messages = $this->repository
+            ->whereRaw('(`to_id` = ' . auth()->user()->id . ' and `from_id` = ' . $id . ') or (`to_id` = ' . $id . ' and `from_id` = ' . auth()->user()->id . ')')->orderBy('id', 'desc')->limit(5)->get();
+        $messages = $messages->keyBy('id')->reverse();
         return view('action.messenger.show', compact('user', 'messages'));
     }
 
