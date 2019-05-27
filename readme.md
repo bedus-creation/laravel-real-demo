@@ -26,13 +26,13 @@ PUSHER_APP_CLUSTER=mt1
 ```
 App\Providers\BroadcastServiceProvider::class,
 ```
-8. Add this line to boardcast message
+8. Add this line to boardcast message in routes/channel.php
 ```
 Broadcast::channel('messages', function () {
     return true;
 });
 ```
-9. Define port and host in boardcasting.php
+9. Define port and host in config/boardcasting.php
 ```
 'pusher' => [
     'driver' => 'pusher',
@@ -48,7 +48,7 @@ Broadcast::channel('messages', function () {
     ],
 ],
 ```
-10. Define port and host in bootstrap.js
+10. Define port and host in resources/js/bootstrap.js
 ```
 window.Echo = new Echo({
     broadcaster: 'pusher',
@@ -60,7 +60,7 @@ window.Echo = new Echo({
 ```
 11. Run 
 ```
-websocket:serve
+php artisan websocket:serve
 ```
 
 
